@@ -1,30 +1,54 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div class="chat-wrap">
+        <div class="chat">
+            <sidebar />
+            <div class="body">
+              <router-view/>                
+            </div>            
+        </div>
+    </div>   
 </template>
 
+<script setup>
+import Sidebar from '@/components/Sidebar.vue';
+</script>
+
 <style lang="less">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-nav {
-  padding: 30px;
+body {
+  background-color: #85adf7;
+  font-family: 'Roboto', sans-serif; 
+  font-weight: 400;
+  font-size: 13px;  
+}
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+.chat-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 
-    &.router-link-exact-active {
-      color: #42b983;
+    .chat {
+        width: 1000px;
+        height: 800px;
+        background-color: #fff;
+        border-radius: 5px;
+        box-shadow: 0 0 5px #eee;
+        display: flex;
+
+        .body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
     }
-  }
 }
 </style>
