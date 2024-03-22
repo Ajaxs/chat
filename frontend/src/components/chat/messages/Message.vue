@@ -1,11 +1,12 @@
 <template>
   <div class="message">
     <div class="header"></div>
-    <div class="body">Hello</div>
+    <div class="body">{{ message.text }}</div>
   </div>
 </template>
 
 <script setup>
+const { message } = defineProps(['message']);
 </script>
 
 <style lang="less" scoped>

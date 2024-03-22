@@ -41,7 +41,6 @@
         <a-input-password v-model:value="form.password" />
       </a-form-item>
 
-
       <a-form-item :wrapper-col="{ offset: 8, span: 16 }">
         <a-button type="primary" html-type="submit">Registration</a-button>
       </a-form-item>
@@ -55,7 +54,7 @@
 
 <script setup>
 import { reactive } from 'vue';
-import { httpRequest } from '../../config/httpRequest';
+import axios from 'axios';
 import { RouterLink } from 'vue-router';
 
 const form = reactive({
@@ -66,7 +65,7 @@ const form = reactive({
 });
 
 const registration = (values) => {
-  httpRequest.post('/api/users', values);
+  axios.post('/api/users', values);
 };
 </script>
 

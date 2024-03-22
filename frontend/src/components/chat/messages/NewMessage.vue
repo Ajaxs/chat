@@ -2,13 +2,18 @@
   <div class="new-message">
     <div class="message">
       <a-textarea
-        v-model:value="message"
+        v-model:value="text"
         placeholder="Enter message"
         :auto-size="{ minRows: 1, maxRows: 3 }"
       />
     </div>
     <div class="send">
-      <a-button type="primary" shape="circle" size="default">
+      <a-button
+        type="primary"
+        shape="circle"
+        size="default"
+        @click="sendMessage"
+      >
         <template #icon>
           <SendOutlined />
         </template>
@@ -18,9 +23,33 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
+import httpRequest from '../../../config/httpRequest';
+import { useRoute } from 'vue-router';
+import { useUsersStore } from '../../../store/users';
 import { SendOutlined } from '@ant-design/icons-vue';
-const message = ref('');
+
+const usersStore = useUsersStore();
+const route = useRoute();
+const text = ref('');
+
+const authUser = computed(() => {
+  return usersStore.getAuthUser;
+});
+
+const sendMessage = async () => {
+  try {
+    await httpRequest.post('/api/messages', {
+      user_id: authUser.value.id,
+      dialog_id: Number(route.params.id),
+      text: text.value,
+    });
+
+    text.value = '';
+  } catch (error) {
+    console.error(error);
+  }
+};
 </script>
 
 <style lang="less" scoped>

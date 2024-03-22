@@ -43,26 +43,27 @@
 <script setup>
 import { reactive } from 'vue';
 import { useRouter } from 'vue-router';
-import { httpRequest } from '../../config/httpRequest';
+import axios from 'axios';
 
 const router = useRouter();
 
 const form = reactive({
-  email: '',
-  password: '',
+  email: 'email@gm.com',
+  password: '123456',
   remember: true,
 });
 
 const login = async (values) => {
   try {
-    const response = await httpRequest.post('/api/auth/login', values);
-    localStorage.setItem('refreshToken', response.data.refreshToken);
-    localStorage.setItem('accessToken', response.data.accessToken);
-    router.push('/chat');
+    const response = await axios.post('/api/auth/login', values);
+    if (response.status === 200) {
+      localStorage.setItem('refreshToken', response.data.refreshToken);
+      localStorage.setItem('accessToken', response.data.accessToken);
+      router.push('/chat');
+    }
   } catch (error) {
     console.error(error);
   }
-
 };
 </script>
 

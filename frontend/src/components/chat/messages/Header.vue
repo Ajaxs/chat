@@ -1,10 +1,10 @@
 <template>
   <div class="header">
     <div class="avatar">
-      <img src="https://avatar.iran.liara.run/public/5" width="50" alt="">
+      <img src="https://avatar.iran.liara.run/public/5" width="50" alt="" />
     </div>
     <div class="usernames">
-      Marina Igorevna
+      {{ chat?.title }}
       <span class="status"></span>
     </div>
     <div class="settings-dialog">
@@ -32,7 +32,44 @@
 </template>
 
 <script setup>
-import { EllipsisOutlined, HeartOutlined, SearchOutlined } from '@ant-design/icons-vue';
+import {
+  EllipsisOutlined,
+  HeartOutlined,
+  SearchOutlined,
+} from '@ant-design/icons-vue';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useDialogStore } from '../../../store/dialogs';
+import { useUsersStore } from '../../../store/users';
+
+const route = useRoute();
+const dialogStore = useDialogStore();
+const usersStore = useUsersStore();
+
+const userAuth = computed(() => {
+  return usersStore.getAuthUser;
+});
+
+const chat = computed(() => {
+  const dialog = dialogStore.getDialog(Number(route.params.id));
+  if (dialog && userAuth.value) {
+    if (dialog.users.length > 2) {
+      return { title: dialog.title, info: `${dialog.users.length} участника` };
+    } else {
+      const { id } = dialog.users.find((item) => item.id !== userAuth.value.id);
+      const companion = usersStore.getUser(id);
+      if (companion) {
+        return {
+          title: `${companion.firstname} ${companion.lastname}`,
+          info: '-',
+        };
+      } else {
+        return 'Loading';
+      }
+    }
+  }
+  return 'Loading';
+});
 </script>
 
 <style lang="less" scoped>
@@ -51,7 +88,6 @@ import { EllipsisOutlined, HeartOutlined, SearchOutlined } from '@ant-design/ico
     font-weight: 700;
 
     .status {
-
       display: inline-block;
       width: 10px;
       height: 10px;

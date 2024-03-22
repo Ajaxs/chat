@@ -1,10 +1,12 @@
 <template>
   <div class="chat-sidebar">
-    <div class="user-info">
+    <div class="user-info" v-if="userAuth">
       <div class="avatar">
-        <img src="https://avatar.iran.liara.run/public/5" width="60" alt="">
+        <img :src="userAuth.avatar" width="60" alt="" />
       </div>
-      <div class="username">Evgeny Bochkarev</div>
+      <div class="username">
+        {{ userAuth.firstname }} {{ userAuth.lastname }}
+      </div>
       <div class="profile">
         <a-dropdown :trigger="['click']">
           <a class="ant-dropdown-link" @click.prevent>
@@ -22,6 +24,7 @@
         </a-dropdown>
       </div>
     </div>
+
     <div class="dialog-search">
       <a-input-search
         v-model:value="searchText"
@@ -31,9 +34,11 @@
       />
     </div>
     <div class="dialog-list">
-
-      <dialog-item v-for="dialog in dialogs" :key="dialog.id" :dialog="dialog" />
-
+      <dialog-item
+        v-for="dialog in dialogs"
+        :key="dialog.id"
+        :dialog="dialog"
+      />
     </div>
   </div>
 </template>
@@ -43,22 +48,24 @@ import { onMounted, ref, computed } from 'vue';
 import { EllipsisOutlined } from '@ant-design/icons-vue';
 import DialogItem from './DialogItem.vue';
 import { useDialogStore } from '../../../store/dialogs';
+import { useUsersStore } from '../../../store/users';
 
 const searchText = ref('');
 
-const store = useDialogStore();
+const usersStore = useUsersStore();
+const dialogsStore = useDialogStore();
+
+const userAuth = computed(() => {
+  return usersStore.getUserAuth;
+});
 
 const dialogs = computed(() => {
-  return store.getDialogs;
+  return dialogsStore.getDialogs;
 });
 
-onMounted(() => {
-  store.fetchDialogs();
-});
+onMounted(() => {});
 
-const onSearch = () => {
-
-};
+const onSearch = () => {};
 </script>
 
 <style lang="less" scoped>
@@ -99,7 +106,7 @@ const onSearch = () => {
   }
 
   .dialog-list {
-
   }
 }
-</style>./DialogItem.vue
+</style>
+./DialogItem.vue

@@ -1,5 +1,12 @@
 import { UserEntity } from 'src/users/users.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, JoinTable, ManyToMany } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  JoinTable,
+  ManyToMany,
+} from 'typeorm';
 
 @Entity('dialogs')
 export class DialogEntity {
@@ -10,7 +17,7 @@ export class DialogEntity {
   title: string;
 
   @Column()
-  admin: string;
+  admin: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -19,13 +26,13 @@ export class DialogEntity {
   @JoinTable({
     name: 'dialogs_users', // table name for the junction table of this relation
     joinColumn: {
-        name: 'dialog_id',
-        referencedColumnName: 'id'
+      name: 'dialog_id',
+      referencedColumnName: 'id',
     },
     inverseJoinColumn: {
-        name: 'user_id',
-        referencedColumnName: 'id'
-    }
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
   })
-  users: UserEntity[]
+  users: UserEntity[];
 }

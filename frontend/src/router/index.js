@@ -1,8 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Chat from '../pages/Chat.vue';
 import Auth from '../pages/Auth.vue';
-import Welcome from '../components/chat/messages/Welcome.vue';
-import Dialog from '../components/chat/messages/Dialog.vue';
 import Login from '../components/auth/Login.vue';
 import Registration from '../components/auth/Registration.vue';
 
@@ -10,25 +7,6 @@ const routes = [
   {
     path: '/',
     redirect: '/auth/login',
-  },
-  {
-    path: '/chat',
-    name: 'chat',
-    component: Chat,
-    children: [
-      {
-        path: '',
-        name: 'welcome',
-        component: Welcome,
-        meta: { show: 'sidbar' },
-      },
-      {
-        path: ':id',
-        name: 'dialog',
-        component: Dialog,
-        meta: { show: 'dialog' },
-      },
-    ],
   },
   {
     path: '/auth',
@@ -44,6 +22,25 @@ const routes = [
         path: 'registration',
         name: 'registration',
         component: Registration,
+      },
+    ],
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: () => import('../pages/Chat.vue'),
+    children: [
+      {
+        path: '',
+        name: 'welcome',
+        component: () => import('../components/chat/messages/Welcome.vue'),
+        meta: { show: 'sidbar' },
+      },
+      {
+        path: ':id',
+        name: 'dialog',
+        component: () => import('../components/chat/messages/Dialog.vue'),
+        meta: { show: 'dialog' },
       },
     ],
   },

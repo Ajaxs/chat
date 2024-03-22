@@ -1,12 +1,15 @@
 import { defineStore } from 'pinia';
-import { httpRequest } from '../config/httpRequest';
+import httpRequest from '../config/httpRequest';
 
 export const useDialogStore = defineStore('dialogs', {
   state: () => ({
     dialogs: [],
   }),
   getters: {
-    getDialogs (state) {
+    getDialog(state) {
+      return (id) => state.dialogs.find((item) => item.id === id);
+    },
+    getDialogs(state) {
       return state.dialogs;
     },
   },
@@ -18,6 +21,6 @@ export const useDialogStore = defineStore('dialogs', {
       } catch (error) {
         console.error(error);
       }
-    }
-  }
+    },
+  },
 });

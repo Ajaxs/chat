@@ -10,6 +10,11 @@ export interface Registration {
   password: string;
 }
 
+export interface RefreshParams {
+  refreshToken: string;
+  [index: string]: any;
+}
+
 export enum Auth {
   InvalidLoginOrPassword = 'Invalid login or password',
 }

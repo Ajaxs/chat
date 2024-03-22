@@ -1,7 +1,7 @@
 <template>
   <div class="dialog-item" @click="goChat(dialog.id)">
     <div class="avatar">
-      <img src="https://avatar.iran.liara.run/public/5" width="40" alt="">
+      <img src="https://avatar.iran.liara.run/public/5" width="40" alt="" />
     </div>
     <div class="body">
       <div class="username">{{ dialog.title }}</div>
@@ -16,12 +16,17 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useMessagesStore } from '../../../store/messages';
+
 const { dialog } = defineProps(['dialog']);
+
 const router = useRouter();
+const messagesStore = useMessagesStore();
 
 const goChat = (id) => {
+  messagesStore.fetchMessagesDilog(id);
   router.push(`/chat/${id}`);
-}
+};
 </script>
 
 <style lang="less" scoped>

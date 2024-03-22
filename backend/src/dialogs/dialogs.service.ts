@@ -7,11 +7,20 @@ import { Repository } from 'typeorm';
 export class DialogsService {
   constructor(
     @InjectRepository(DialogEntity)
-    private readonly repository: Repository<DialogEntity>
+    private readonly repository: Repository<DialogEntity>,
   ) {}
 
   public findAll(): Promise<DialogEntity[]> {
-    return this.repository.find();
+    return this.repository.find({
+      select: {
+        users: {
+          id: true,
+        },
+      },
+      relations: {
+        users: true,
+      },
+    });
   }
 
   findOne(id: number): Promise<DialogEntity | null> {
