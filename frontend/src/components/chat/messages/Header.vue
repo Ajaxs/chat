@@ -3,10 +3,13 @@
     <div class="avatar">
       <img src="https://avatar.iran.liara.run/public/5" width="50" alt="" />
     </div>
-    <div class="usernames">
-      {{ chat?.title }}
-      <span class="status"></span>
+    <div class="chat-info">
+      <div class="username" v-if="dialog">
+        {{ dialog.title }} {{ dialog.users }} <span class="status"></span>
+      </div>
+      <div class="info" v-if="info">{{ info }}</div>
     </div>
+
     <div class="settings-dialog">
       <SearchOutlined />
       <HeartOutlined />
@@ -40,52 +43,45 @@ import {
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useDialogStore } from '../../../store/dialogs';
-import { useUsersStore } from '../../../store/users';
 
 const route = useRoute();
 const dialogStore = useDialogStore();
-const usersStore = useUsersStore();
 
-const userAuth = computed(() => {
-  return usersStore.getAuthUser;
+const dialog = computed(() => {
+  return dialogStore.getDialog(Number(route.params.id));
 });
 
-const chat = computed(() => {
-  const dialog = dialogStore.getDialog(Number(route.params.id));
-  if (dialog && userAuth.value) {
-    if (dialog.users.length > 2) {
-      return { title: dialog.title, info: `${dialog.users.length} участника` };
-    } else {
-      const { id } = dialog.users.find((item) => item.id !== userAuth.value.id);
-      const companion = usersStore.getUser(id);
-      if (companion) {
-        return {
-          title: `${companion.firstname} ${companion.lastname}`,
-          info: '-',
-        };
-      } else {
-        return 'Loading';
-      }
-    }
+const info = computed(() => {
+  if (dialog.value && dialog.value.users.length > 2) {
+    return `${dialog.value.users.length} участника`;
+  } else {
+    return '';
   }
-  return 'Loading';
 });
 </script>
 
 <style lang="less" scoped>
 .header {
-  border-bottom: 1px solid #ccc;
   padding: 20px;
   display: flex;
   align-items: center;
+  box-shadow: 0px 0px 4px #bebebe;
 
   .avatar {
     margin-right: 20px;
   }
 
-  .usernames {
+  .chat-info {
     flex-grow: 1;
-    font-weight: 700;
+
+    .username {
+      font-weight: 700;
+    }
+
+    .info {
+      color: #aaa;
+      margin-top: 5px;
+    }
 
     .status {
       display: inline-block;

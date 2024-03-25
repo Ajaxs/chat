@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { MessagesModule } from './messages/messages.module';
 import { configDatabase } from './config/database';
+import { SocketsModule } from './sockets/sockets.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { configDatabase } from './config/database';
     AuthModule,
     DialogsModule,
     MessagesModule,
+    SocketsModule,
   ],
   controllers: [],
   providers: [],

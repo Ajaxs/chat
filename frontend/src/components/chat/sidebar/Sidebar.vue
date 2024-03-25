@@ -1,11 +1,11 @@
 <template>
   <div class="chat-sidebar">
-    <div class="user-info" v-if="userAuth">
+    <div class="user-info" v-if="authUser">
       <div class="avatar">
-        <img :src="userAuth.avatar" width="60" alt="" />
+        <img :src="authUser.avatar" width="60" alt="" />
       </div>
       <div class="username">
-        {{ userAuth.firstname }} {{ userAuth.lastname }}
+        {{ authUser.firstname }} {{ authUser.lastname }} {{ authUser.id }}
       </div>
       <div class="profile">
         <a-dropdown :trigger="['click']">
@@ -55,8 +55,8 @@ const searchText = ref('');
 const usersStore = useUsersStore();
 const dialogsStore = useDialogStore();
 
-const userAuth = computed(() => {
-  return usersStore.getUserAuth;
+const authUser = computed(() => {
+  return usersStore.getAuthUser;
 });
 
 const dialogs = computed(() => {
@@ -74,6 +74,7 @@ const onSearch = () => {};
   background-color: #f9f9f9;
   flex-grow: 0;
   border-radius: 10px 0 0 10px;
+  position: relative;
 
   .user-info {
     padding: 20px;
