@@ -9,7 +9,7 @@
     </div>
     <div class="body">
       <div class="username">
-        {{ dialog.title }} {{ timestampLastReadedMessage }}
+        {{ dialog.title }}
       </div>
       <div class="message">
         <template v-if="lastMessage">
@@ -32,7 +32,9 @@ import { useRouter, useRoute } from 'vue-router';
 import { useMessagesStore } from '../../../store/messages';
 import { computed } from 'vue';
 
-const { dialog } = defineProps(['dialog']);
+const { dialog } = defineProps({
+  dialog: Object,
+});
 
 const router = useRouter();
 const route = useRoute();

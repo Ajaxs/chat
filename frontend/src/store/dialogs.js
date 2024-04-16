@@ -22,5 +22,27 @@ export const useDialogStore = defineStore('dialogs', {
         console.error(error);
       }
     },
+    async addDialog(dialog) {
+      try {
+        const response = await httpRequest.post('/api/dialogs', dialog);
+        console.log(response.data);
+        this.dialogs.push({
+          ...dialog,
+          id: response.data.id,
+        });
+        return response.data.id;
+      } catch (error) {
+        console.error(error);
+      }
+      //
+    },
+    async createDialog() {
+      try {
+        const response = await httpRequest.post('/api/dialogs');
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
 });

@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DialogEntity } from './dialogs.entity';
 import { Repository, DataSource } from 'typeorm';
 import { UserEntity } from '../users/users.entity';
+import { CreateDialogDTO } from './dto/create-dialog.dto';
 
 @Injectable()
 export class DialogsService {
@@ -28,28 +29,34 @@ export class DialogsService {
         users: { id: user.id },
       },
     });
-    // ewrw
-    const dialogsId = dialogs.map((item) => item.id);
+
+    const dialogsId = dialogs.map((item) => item.id).join(',');
     const users = await this.dataSource.query(
-      `SELECT * FROM dialogs_users WHERE dialog_id IN (${dialogsId.join(',')})`,
+      `SELECT * FROM dialogs_users WHERE dialog_id IN (${dialogsId})`,
     );
+
+    console.log(1);
+
+    const userGroupByDialog = users.reduce((group, dialog) => {
+      const { dialog_id, user_id } = dialog;
+      group[dialog_id] = group[dialog_id] ?? [];
+      group[dialog_id].push(user_id);
+      return group;
+    }, {});
 
     const result = [];
 
     for (let i = 0; i < dialogs.length; i++) {
       const dialogItem = dialogs[i];
-      const usersId = users
-        .filter((userItem) => userItem.dialog_id === dialogItem.id)
-        .map((item) => item.user_id);
 
-      if (usersId.length === 2) {
-        const companionId = usersId.filter((item) => item !== user.id);
-        const companion = await this.userRepository.findOne({
-          where: { id: companionId },
-        });
-        dialogItem.title = `${companion.firstname} ${companion.lastname}`;
-      }
-      dialogItem.users = usersId;
+      // if (usersId.length === 2) {
+      //   const companionId = usersId.filter((item) => item !== user.id);
+      //   const companion = await this.userRepository.findOne({
+      //     where: { id: companionId },
+      //   });
+      //   dialogItem.title = `${companion.firstname} ${companion.lastname}`;
+      // }
+      dialogItem.users = userGroupByDialog[dialogItem.id];
       result.push(dialogItem);
     }
 
@@ -68,6 +75,21 @@ export class DialogsService {
       },
       where: { id },
     });
+  }
+
+  public async create(data: CreateDialogDTO): Promise<DialogEntity> {
+    type dialogType = Omit<CreateDialogDTO, 'users'>;
+    const dialog: dialogType = data;
+
+    const createdDialog = await this.dialogRepository.save(dialog);
+
+    await this.dataSource
+      .createQueryBuilder()
+      .relation(DialogEntity, 'users')
+      .of(createdDialog.id)
+      .add(data.users);
+
+    return createdDialog;
   }
 
   public async update(id: number, data): Promise<void> {

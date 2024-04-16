@@ -3,7 +3,7 @@
     <div class="message">
       <a-textarea
         v-model:value="text"
-        placeholder="Enter message"
+        placeholder="Ваше сообщение"
         :auto-size="{ minRows: 1, maxRows: 3 }"
       />
     </div>
@@ -29,6 +29,8 @@ import { useRoute } from 'vue-router';
 import { useUsersStore } from '../../../store/users';
 import { SendOutlined } from '@ant-design/icons-vue';
 
+const emit = defineEmits(['add-new-message']);
+
 const usersStore = useUsersStore();
 const route = useRoute();
 const text = ref('');
@@ -45,6 +47,7 @@ const sendMessage = async () => {
       text: text.value,
     });
 
+    emit('add-new-message');
     text.value = '';
   } catch (error) {
     console.error(error);

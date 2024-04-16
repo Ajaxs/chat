@@ -7,12 +7,12 @@
       <div class="username" v-if="dialog">
         {{ dialog.title }} {{ dialog.users }} <span class="status"></span>
       </div>
-      <div class="info" v-if="info">{{ info }}</div>
+      <div class="info" v-if="info">{{ info }}, {{ usersOnline }}</div>
     </div>
 
     <div class="settings-dialog">
       <SearchOutlined />
-      <HeartOutlined />
+      <StarOutlined />
       <a-dropdown :trigger="['click']">
         <a class="ant-dropdown-link" @click.prevent>
           <EllipsisOutlined />
@@ -37,15 +37,17 @@
 <script setup>
 import {
   EllipsisOutlined,
-  HeartOutlined,
+  StarOutlined,
   SearchOutlined,
 } from '@ant-design/icons-vue';
 import { computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useDialogStore } from '../../../store/dialogs';
+import { useUsersStore } from '../../../store/users';
 
 const route = useRoute();
 const dialogStore = useDialogStore();
+const usersStore = useUsersStore();
 
 const dialog = computed(() => {
   return dialogStore.getDialog(Number(route.params.id));
@@ -57,6 +59,10 @@ const info = computed(() => {
   } else {
     return '';
   }
+});
+
+const usersOnline = computed(() => {
+  return `${usersStore.getUsersOnline(dialog.value.users)} в сети`;
 });
 </script>
 

@@ -8,14 +8,18 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { UserStatus } from '../shared/types/users';
+import { Injectable } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
     origin: '*',
   },
 })
-export class Geteway implements OnGatewayConnection, OnGatewayDisconnect {
-  users = new Map();
+@Injectable()
+export class SocketsService
+  implements OnGatewayConnection, OnGatewayDisconnect
+{
+  public users = new Map();
   @WebSocketServer() server: Server = new Server();
 
   @SubscribeMessage('change-user-status')
@@ -24,6 +28,11 @@ export class Geteway implements OnGatewayConnection, OnGatewayDisconnect {
     this.users.set(data.userId, {
       ...user,
       isOnline: data.isOnline,
+    });
+
+    this.server.emit('update-user-status', {
+      id: data.userId,
+      is_online: data.isOnline,
     });
   }
 
@@ -37,8 +46,10 @@ export class Geteway implements OnGatewayConnection, OnGatewayDisconnect {
     usersIds: { id: number }[],
   ) {
     usersIds.forEach((item: { id: number }) => {
-      const user = this.users.get(item.id);
-      this.server.to(user.socket).emit(eventName, JSON.stringify(data));
+      if (this.users.has(item.id)) {
+        const user = this.users.get(item.id);
+        this.server.to(user.socket).emit(eventName, JSON.stringify(data));
+      }
     });
   }
 
@@ -52,6 +63,6 @@ export class Geteway implements OnGatewayConnection, OnGatewayDisconnect {
 
   public async handleDisconnect(socket: Socket): Promise<void> {
     this.users.delete(socket.handshake.auth.userId);
-    //console.log('users', this.users);
+    //console.log('users disconnected', this.users);
   }
 }

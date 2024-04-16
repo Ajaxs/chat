@@ -12,11 +12,11 @@ import { SocketsModule } from './sockets/sockets.module';
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync(configDatabase),
+    SocketsModule,
     UsersModule,
     AuthModule,
     DialogsModule,
     MessagesModule,
-    SocketsModule,
   ],
   controllers: [],
   providers: [],

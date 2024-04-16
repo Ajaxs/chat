@@ -3,12 +3,11 @@ import { MessagesController } from './messages.controller';
 import { MessagesService } from './messages.service';
 import { MessageEntity } from './messages.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Geteway } from '../sockets/sockets.gateway';
-import { DialogsModule } from 'src/dialogs/dialogs.module';
+import { DialogsModule } from '../dialogs/dialogs.module';
 
 @Module({
   imports: [DialogsModule, TypeOrmModule.forFeature([MessageEntity])],
   controllers: [MessagesController],
-  providers: [MessagesService, Geteway],
+  providers: [MessagesService],
 })
 export class MessagesModule {}

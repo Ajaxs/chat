@@ -1,6 +1,6 @@
 <template>
   <div class="page-chat">
-    <sidebar />
+    <sidebar @logout="logout" />
     <div class="chat-content">
       <router-view />
     </div>
@@ -24,18 +24,25 @@ const router = useRouter();
 const accessToken = localStorage.getItem('accessToken');
 const refreshToken = localStorage.getItem('refreshToken');
 
-const goLogin = async () => {
+const redirectLoginPage = async () => {
   await router.push('/auth/login');
 };
 
 if (!accessToken && !refreshToken) {
-  goLogin();
+  redirectLoginPage();
 }
+
+const logout = () => {
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('refreshToken');
+  redirectLoginPage();
+};
 
 const authUser = computed(() => {
   return usersStore.getAuthUser;
 });
 
+// Connect socket when we know auth user
 watch(authUser, (user) => {
   socket.auth = { userId: user.id };
   socket.connect();
@@ -47,6 +54,7 @@ onMounted(async () => {
   dialogsStore.fetchDialogs();
   messagesStore.fetchMessagesDilog();
   messagesStore.bindEvents();
+  usersStore.bindEvents();
 });
 
 window.addEventListener('focus', () => {

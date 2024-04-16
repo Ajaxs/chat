@@ -1,4 +1,4 @@
-import { UserEntity } from 'src/users/users.entity';
+import { UserEntity } from '../users/users.entity';
 import {
   Entity,
   Column,
@@ -18,6 +18,9 @@ export class DialogEntity {
 
   @Column()
   admin: number;
+
+  @Column()
+  is_public: number;
 
   @CreateDateColumn()
   created_at: Date;

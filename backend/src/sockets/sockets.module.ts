@@ -1,7 +1,9 @@
-import { Module } from '@nestjs/common';
-import { Geteway } from './sockets.gateway';
+import { Global, Module } from '@nestjs/common';
+import { SocketsService } from './sockets.gateway';
 
+@Global()
 @Module({
-  providers: [Geteway],
+  providers: [SocketsService],
+  exports: [SocketsService],
 })
 export class SocketsModule {}

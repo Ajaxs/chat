@@ -2,7 +2,7 @@
   <div
     class="message"
     :class="{
-      mine: message.user_id === user.id,
+      mine: message.user_id === user?.id,
       unreaded: message.timestamp > timestampLastReadedMessage,
     }"
     :data-timestamp="message.timestamp"

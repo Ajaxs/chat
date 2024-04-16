@@ -10,7 +10,10 @@ export const useMessagesStore = defineStore('messages', {
   getters: {
     getMessagesInDialog(state) {
       return (dialogId) => {
-        return state.messages.filter((item) => item.dialog_id === dialogId);
+        const messages = state.messages.filter(
+          (item) => item.dialog_id === dialogId
+        );
+        return Object.groupBy(messages, ({ date }) => date);
       };
     },
     getLastMessageInDialog(state) {
@@ -57,6 +60,10 @@ export const useMessagesStore = defineStore('messages', {
     },
     updateReadedMessage(dialogId, timestamp) {
       this.readedMessages[dialogId] = timestamp;
+      localStorage.setItem(
+        'readedMessages',
+        JSON.stringify(this.readedMessages)
+      );
     },
   },
 });

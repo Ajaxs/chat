@@ -1,14 +1,21 @@
 <template>
   <div class="content">
     <div class="wrap-messages">
-      <div class="messages" v-if="messages.length > 0">
-        <message
-          v-for="message in messages"
-          :key="message.id"
-          :message
-          :user="authUser"
-          :timestamp-last-readed-message="timestampLastReadedMessage"
-        />
+      <div
+        class="messages"
+        id="messages"
+        v-if="Object.keys(messages).length > 0"
+      >
+        <template v-for="(group, date) in messages" :key="date">
+          <div class="messages-date">{{ date }}</div>
+          <message
+            v-for="message in group"
+            :key="message.id"
+            :message
+            :user="authUser"
+            :timestamp-last-readed-message="timestampLastReadedMessage"
+          />
+        </template>
       </div>
       <div class="no-messages" v-else>Нет сообщений в этом диалоге</div>
     </div>
@@ -16,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUpdated } from 'vue';
+import { computed, watch, onMounted, onUpdated, nextTick } from 'vue';
 import { useRoute } from 'vue-router';
 import { useMessagesStore } from '../../../store/messages';
 import { useUsersStore } from '../../../store/users';
@@ -42,40 +49,65 @@ const authUser = computed(() => {
   return usersStore.getAuthUser;
 });
 
-const options = {
-  root: document.querySelector('.wrap-messages'),
-  rootMargin: '0px',
-  threshold: 1,
-};
+const observers = new IntersectionObserver(
+  (entries, observer) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const messageDetect = entry.target;
+        messagesStore.updateReadedMessage(
+          dialogId.value,
+          Number(messageDetect.dataset.timestamp)
+        );
+        observer.unobserve(messageDetect);
+      }
+    });
+  },
+  {
+    root: document.querySelector('.wrap-messages'),
+    rootMargin: '0px',
+    threshold: 1,
+  }
+);
 
-const observers = new IntersectionObserver((entries, observer) => {
-  entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      const messageDetect = entry.target;
-      //console.log(messageDetect);
-      messagesStore.updateReadedMessage(
-        dialogId.value,
-        Number(messageDetect.dataset.timestamp)
-      );
-      observer.unobserve(messageDetect);
-    }
-  });
-}, options);
-
-const updateMessageObserver = () => {
+const updateMessagesObserver = () => {
   const messagesList = document.querySelectorAll('.message.unreaded');
   messagesList.forEach((elem) => {
     observers.observe(elem);
   });
 };
 
-onMounted(() => {
-  updateMessageObserver();
+const scrollUnreadedMessages = () => {
+  const lastReadedMessage = document.querySelector(
+    `[data-timestamp="${timestampLastReadedMessage.value}"]`
+  );
+  //console.log(lastReadedMessage, timestampLastReadedMessage.value);
+  if (lastReadedMessage) {
+    lastReadedMessage.scrollIntoView({ block: 'end', behavior: 'auto' });
+  }
+};
+
+const scrollEndMessage = () => {
+  document
+    .querySelector('#messages')
+    .scrollIntoView({ block: 'end', behavior: 'auto' });
+};
+
+watch(dialogId, async () => {
+  await nextTick();
+  scrollUnreadedMessages();
+});
+
+onMounted(async () => {
+  updateMessagesObserver();
+  await nextTick();
+  scrollUnreadedMessages();
 });
 
 onUpdated(() => {
-  updateMessageObserver();
+  updateMessagesObserver();
 });
+
+defineExpose({ scrollEndMessage });
 </script>
 
 <style lang="less" scoped>
@@ -88,13 +120,19 @@ onUpdated(() => {
     height: 100px;
 
     .messages {
-      padding: 20px;
+      padding: 0 20px;
+      margin: 20px 0;
       display: flex;
       flex-direction: column;
       flex-grow: 1;
       justify-content: flex-end;
       width: 100%;
       min-height: 100%;
+    }
+
+    .messages-date {
+      text-align: center;
+      margin: 25px 0;
     }
 
     .no-messages {

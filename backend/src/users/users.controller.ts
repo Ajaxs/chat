@@ -8,8 +8,6 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { Registration } from '../auth/auth.interface';
-import { fillObject } from 'src/helpers/helper';
-import { UserRdo } from './rdo/users.rdo';
 
 @Controller('users')
 export class UsersController {
@@ -17,8 +15,7 @@ export class UsersController {
 
   @Get()
   public async findAll() {
-    const users = await this.usersService.findAll();
-    return users.map((item) => fillObject(UserRdo, item));
+    return await this.usersService.findAll();
   }
 
   @Get(':id')
