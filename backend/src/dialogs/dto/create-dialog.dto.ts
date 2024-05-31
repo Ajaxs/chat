@@ -1,4 +1,5 @@
 import { IsString, IsNumber, IsArray, IsOptional } from 'class-validator';
+import { UserEntity } from '../../users/users.entity';
 
 export class CreateDialogDTO {
   @IsString()
@@ -7,7 +8,10 @@ export class CreateDialogDTO {
   @IsNumber()
   public admin: number;
 
+  @IsNumber()
+  public is_group: number;
+
   @IsOptional()
   @IsArray()
-  public users: number[];
+  public users: Partial<UserEntity>[];
 }

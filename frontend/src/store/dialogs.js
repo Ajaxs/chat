@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import httpRequest from '../config/httpRequest';
+import { socket } from '../config/socket';
 
 export const useDialogStore = defineStore('dialogs', {
   state: () => ({
@@ -12,8 +13,21 @@ export const useDialogStore = defineStore('dialogs', {
     getDialogs(state) {
       return state.dialogs;
     },
+    searchContact(state) {
+      return (usersIds) =>
+        state.dialogs.find(
+          (item) =>
+            item.is_group === 0 &&
+            JSON.stringify(item.users) === JSON.stringify(usersIds)
+        );
+    },
   },
   actions: {
+    bindEvents() {
+      socket.on('new-dialog', (data) => {
+        this.dialogs.push(JSON.parse(data));
+      });
+    },
     async fetchDialogs() {
       try {
         const response = await httpRequest.get('/api/dialogs');
@@ -22,27 +36,25 @@ export const useDialogStore = defineStore('dialogs', {
         console.error(error);
       }
     },
-    async addDialog(dialog) {
+    async createDialog(dialog) {
       try {
         const response = await httpRequest.post('/api/dialogs', dialog);
-        console.log(response.data);
-        this.dialogs.push({
-          ...dialog,
-          id: response.data.id,
-        });
-        return response.data.id;
+        return response.data;
       } catch (error) {
         console.error(error);
       }
-      //
     },
-    async createDialog() {
-      try {
-        const response = await httpRequest.post('/api/dialogs');
-        console.log(response.data);
-      } catch (error) {
-        console.error(error);
-      }
+    changeDraftToDialog(draftId, dialogId) {
+      this.dialogs = this.dialogs.map((item) => {
+        if (item.id === draftId) {
+          delete item.is_draft;
+          return { ...item, id: dialogId };
+        }
+        return item;
+      });
+    },
+    createDraft(dialog) {
+      this.dialogs.push(dialog);
     },
   },
 });

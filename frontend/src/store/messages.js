@@ -65,5 +65,8 @@ export const useMessagesStore = defineStore('messages', {
         JSON.stringify(this.readedMessages)
       );
     },
+    async sendMessage(message) {
+      await httpRequest.post('/api/messages', message);
+    },
   },
 });

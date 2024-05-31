@@ -1,7 +1,7 @@
 <template>
   <div
     class="dialog-item"
-    :class="{ active: dialog.id === currentDialogId }"
+    :class="{ active: dialog.id === currentDialogId, draft: dialog.is_draft }"
     @click="goChat(dialog.id)"
   >
     <div class="avatar">
@@ -9,7 +9,7 @@
     </div>
     <div class="body">
       <div class="username">
-        {{ dialog.title }}
+        <UsergroupAddOutlined v-if="dialog.is_group" /> {{ dialog.title }}
       </div>
       <div class="message">
         <template v-if="lastMessage">
@@ -19,7 +19,7 @@
       </div>
     </div>
     <div class="actions">
-      <div class="date">13.03.2024</div>
+      <div class="date">{{ lastMessage?.date }}</div>
       <div class="count" v-if="unreadedMessageCount > 0">
         {{ unreadedMessageCount }}
       </div>
@@ -29,6 +29,7 @@
 
 <script setup>
 import { useRouter, useRoute } from 'vue-router';
+import { UsergroupAddOutlined } from '@ant-design/icons-vue';
 import { useMessagesStore } from '../../../store/messages';
 import { computed } from 'vue';
 
@@ -76,6 +77,10 @@ const goChat = (id) => {
     background-color: #e8e8e8;
   }
 
+  &.draft {
+    background-color: #ffefef;
+  }
+
   &:hover {
     background: #e0e0e0;
   }
@@ -110,6 +115,7 @@ const goChat = (id) => {
   .actions {
     text-align: right;
     align-self: flex-start;
+    flex-shrink: 0;
 
     .date {
       margin-bottom: 6px;

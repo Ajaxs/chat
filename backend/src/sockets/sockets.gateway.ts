@@ -43,7 +43,7 @@ export class SocketsService
   public sendEventSomeUsers(
     eventName: string,
     data: object,
-    usersIds: { id: number }[],
+    usersIds: { id?: number }[],
   ) {
     usersIds.forEach((item: { id: number }) => {
       if (this.users.has(item.id)) {
@@ -58,11 +58,9 @@ export class SocketsService
       socket: socket.id,
       isOnline: true,
     });
-    //console.log('users connected', this.users);
   }
 
   public async handleDisconnect(socket: Socket): Promise<void> {
     this.users.delete(socket.handshake.auth.userId);
-    //console.log('users disconnected', this.users);
   }
 }

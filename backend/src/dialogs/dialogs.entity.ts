@@ -20,7 +20,7 @@ export class DialogEntity {
   admin: number;
 
   @Column()
-  is_public: number;
+  is_group: number;
 
   @CreateDateColumn()
   created_at: Date;
@@ -37,5 +37,5 @@ export class DialogEntity {
       referencedColumnName: 'id',
     },
   })
-  users: UserEntity[];
+  users: Partial<UserEntity>[];
 }

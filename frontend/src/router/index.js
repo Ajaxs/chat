@@ -33,14 +33,26 @@ const routes = [
       {
         path: '',
         name: 'welcome',
-        component: () => import('../components/chat/messages/Welcome.vue'),
-        meta: { show: 'sidbar' },
+        component: () => import('../components/chat/content/Welcome.vue'),
+        //meta: { show: 'sidbar' },
       },
       {
         path: ':id',
         name: 'dialog',
-        component: () => import('../components/chat/messages/Dialog.vue'),
-        meta: { show: 'dialog' },
+        component: () => import('../components/chat/content/Dialog.vue'),
+        //meta: { show: 'dialog' },
+      },
+    ],
+  },
+  {
+    path: '/draft',
+    name: 'draft',
+    component: () => import('../pages/Chat.vue'),
+    children: [
+      {
+        path: ':id',
+        name: 'dialogDraft',
+        component: () => import('../components/chat/content/Dialog.vue'),
       },
     ],
   },

@@ -35,8 +35,6 @@ export class DialogsService {
       `SELECT * FROM dialogs_users WHERE dialog_id IN (${dialogsId})`,
     );
 
-    console.log(1);
-
     const userGroupByDialog = users.reduce((group, dialog) => {
       const { dialog_id, user_id } = dialog;
       group[dialog_id] = group[dialog_id] ?? [];
@@ -48,15 +46,17 @@ export class DialogsService {
 
     for (let i = 0; i < dialogs.length; i++) {
       const dialogItem = dialogs[i];
-
-      // if (usersId.length === 2) {
-      //   const companionId = usersId.filter((item) => item !== user.id);
-      //   const companion = await this.userRepository.findOne({
-      //     where: { id: companionId },
-      //   });
-      //   dialogItem.title = `${companion.firstname} ${companion.lastname}`;
-      // }
       dialogItem.users = userGroupByDialog[dialogItem.id];
+      dialogItem.users.sort();
+
+      if (dialogItem.is_group === 0) {
+        const companionId = dialogItem.users.find((item) => item !== user.id);
+        const companion = await this.userRepository.findOne({
+          where: { id: Number(companionId) },
+        });
+        dialogItem.title = `${companion.firstname} ${companion.lastname}`;
+      }
+
       result.push(dialogItem);
     }
 
@@ -77,19 +77,10 @@ export class DialogsService {
     });
   }
 
-  public async create(data: CreateDialogDTO): Promise<DialogEntity> {
-    type dialogType = Omit<CreateDialogDTO, 'users'>;
-    const dialog: dialogType = data;
-
-    const createdDialog = await this.dialogRepository.save(dialog);
-
-    await this.dataSource
-      .createQueryBuilder()
-      .relation(DialogEntity, 'users')
-      .of(createdDialog.id)
-      .add(data.users);
-
-    return createdDialog;
+  public async create(data: CreateDialogDTO): Promise<number> {
+    data.users = data.users.map((item) => ({ id: Number(item) }));
+    const dialog = await this.dialogRepository.save(data);
+    return dialog.id;
   }
 
   public async update(id: number, data): Promise<void> {

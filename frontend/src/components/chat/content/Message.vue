@@ -7,9 +7,7 @@
     }"
     :data-timestamp="message.timestamp"
   >
-    <div class="header">
-      {{ message.time }}
-    </div>
+    <div class="header">{{ message.time }}</div>
     <div class="body">{{ message.text }}</div>
   </div>
 </template>

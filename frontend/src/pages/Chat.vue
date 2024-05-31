@@ -55,6 +55,7 @@ onMounted(async () => {
   messagesStore.fetchMessagesDilog();
   messagesStore.bindEvents();
   usersStore.bindEvents();
+  dialogsStore.bindEvents();
 });
 
 window.addEventListener('focus', () => {

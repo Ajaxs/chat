@@ -6,7 +6,7 @@ import { SocketsService } from '../sockets/sockets.gateway';
 import { DialogsService } from '../dialogs/dialogs.service';
 import { MessageRDO } from './rdo/message.rdo';
 import { CreateMessageDTO } from './dto/create-message';
-import { EVENT_NEW_MESSAGE } from './messages.constant';
+import { EVENT_NEW_DIALOG, EVENT_NEW_MESSAGE } from './messages.constant';
 import { QueryParams } from '../shared/types/messages';
 
 @Injectable()
@@ -30,6 +30,7 @@ export class MessagesService {
   async create(data: CreateMessageDTO): Promise<void> {
     const message = await this.messagesRepository.save(data);
     const dialog = await this.dialogsService.findOne(message.dialog_id);
+    console.log('dialog', dialog);
 
     // Send event via socket
     this.socket.sendEventSomeUsers(
@@ -37,6 +38,8 @@ export class MessagesService {
       new MessageRDO(message),
       dialog.users,
     );
+
+    this.socket.sendEventSomeUsers(EVENT_NEW_DIALOG, dialog, dialog.users);
   }
 
   async remove(id: number): Promise<void> {
